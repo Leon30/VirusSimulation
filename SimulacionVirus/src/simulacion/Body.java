@@ -15,7 +15,6 @@ public class Body {
 	private Color color = Color.RED;
 	private int size;
 	private int id;
-	private int inFlag = 0;
 	private boolean outFlag = false;
 	
 	public Body(PhysicsVector position, PhysicsVector velocity, int size) {
@@ -166,20 +165,6 @@ public class Body {
 	public String toString() {
 		return "Body [position=" + position + ", velocity=" + velocity + ", state="
 				+ state + ", color=" + color + ", size=" + size + ", id=" + id + "]";
-	}
-
-	public int getInFlag() {
-		return inFlag;
-	}
-
-	public void setInFlag(int inFlag) {
-		System.out.println("reseted");
-		this.inFlag = inFlag;
-	}
-
-	public void decreaseInFlag() {
-		System.out.println("decreased: "+(inFlag-2));
-		inFlag--;
 	}
 
 	public boolean isOutFlag() {

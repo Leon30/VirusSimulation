@@ -131,9 +131,6 @@ public class MainSim {
 							body.regenerate(r);
 						}
 					}
-					if(body.getInFlag() > 0) {
-						body.decreaseInFlag();
-					}else {}
 					jfMain.update();
 				}
 			}
