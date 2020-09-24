@@ -7,20 +7,21 @@ import java.util.Random;
 
 public class Body {
 
-	public static final double DRAWING_RELATION = 1f/2f;
-	public static final double GRAVITY_CTE = 0.00006674;//(6.674e-11)*800000000f;
-	
+	public static int PixelsToSpread = 10;
 	private PhysicsVector position;
 	private PhysicsVector velocity;
 	private PhysicsVector acceleration;
 	private char state;//S:Suceptible,I:infectado,R:recuperado
 	private Color color = Color.RED;
 	private int size;
+	private int id;
+	private int inFlag = 0;
+	private boolean outFlag = false;
 	
 	public Body(PhysicsVector position, PhysicsVector velocity, PhysicsVector acceleration, int size) {
 		super();
 		this.position = position;
-		this.velocity = velocity;
+		this.setVelocity(velocity);
 		this.acceleration = acceleration;
 		this.setSize(size);
 	}
@@ -28,9 +29,9 @@ public class Body {
 	public Body(PhysicsVector position, PhysicsVector velocity, PhysicsVector acceleration, int size, char state) {
 		super();
 		this.position = position;
-		this.velocity = velocity;
+		this.setVelocity(velocity);
 		this.acceleration = acceleration;
-		this.state = state;
+		this.setState(state);
 		this.color = state=='S'?Color.BLUE:(state=='I'?Color.RED:Color.GRAY);
 		this.setSize(size);
 	}
@@ -41,14 +42,16 @@ public class Body {
 	
 	public void regenerate(Random r) {
 		position = new PhysicsVector(r.nextDouble()*700, r.nextDouble()*680);
-		velocity = new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5);
+		setVelocity(new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5));
 		acceleration = new PhysicsVector(0,0);
+		setState(r.nextFloat()<0.1?'I':'S');
 	}
 
 	public Body() {
 	}
 
 	public void draw(Graphics2D g) {
+		
 		g.setColor(color);
 		int x = (int)((position.getX()-(getSize()/2)));
 		int y = (int)((position.getY()-(getSize()/2)));
@@ -61,7 +64,8 @@ public class Body {
 //		g.setStroke(new BasicStroke(2));
 //		g.setColor(Color.BLACK);
 //		g.drawLine((int)this.position.x, (int)this.position.y, (int)pos2.x, (int)pos2.y);
-		
+		String strpos = String.valueOf(getId());
+		g.drawBytes(strpos.getBytes(), 0, strpos.length(), x+size/2, y-15);
 //		String strpos = String.format("posicion (%.3f,%.3f)",position.x,position.y);
 //		g.drawBytes(strpos.getBytes(), 0, strpos.length(), x+size/2, y-15);
 //		
@@ -70,28 +74,30 @@ public class Body {
 	}
 	
 	public void applyCollision(Body body) {
-		 if(isIn(body)) {
+		 if(isIn(body, PixelsToSpread)) {
 //			 double auxvx = velocity.x;
 //			 double auxvy = velocity.y;
 //			 velocity.x = body.velocity.x;
 //			 velocity.y = body.velocity.y;
 //			 body.velocity.x=auxvx;
 //			 body.velocity.y=auxvy;
-			 
+			 if(body.getState()=='I') {
+				 this.setState('I');
+			 }
 		 }
 	}
 	
 	public void fixOver(Body[] bodies) {
 		for (Body body : bodies) {
-			if(body!=this && isIn(body)) {
+			if(body!=this && isIn(body,0)) {
 				this.position.x+=body.position.x-this.position.x;
 			}
 		}
 	}
 	
-	public boolean isIn(Body body) {
+	public boolean isIn(Body body, int min_dist) {
 		double dist = this.position.distance(body.position);
-		return dist <= ((this.getSize()/2) + (body.getSize()/2));
+		return dist <= ((this.getSize()/2) + (body.getSize()/2)) + min_dist;
 	}
 	
 	public void update(Body[] bodies,Random r) {
@@ -102,17 +108,17 @@ public class Body {
 		}
 		
 //		velocity.add(acceleration);
-		position.add(velocity);
+		position.add(getVelocity());
 //		acceleration.decrease(0.8);
-		if(r.nextDouble()<0.01) {
-			velocity.x = (r.nextDouble()*0.5)-0.25;
-			velocity.y = (r.nextDouble()*0.5)-0.25;
+		if(r.nextDouble()<0.005) {
+			getVelocity().x = (r.nextDouble())-0.5;
+			getVelocity().y = (r.nextDouble())-0.5;
 		}
 //		velocity.decrease();
 	}
 	
 	public boolean checkOutside(Rectangle rect) {
-		return (position.x<rect.x && position.y<rect.y) || (position.x>(rect.x+rect.width) && position.y>(rect.y+rect.height));
+		return !rect.contains(position);
 	}
 	
 	public void repos(PhysicsVector pv) {
@@ -122,9 +128,9 @@ public class Body {
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		PhysicsVector position = (PhysicsVector) this.position.clone();
-		PhysicsVector velocity = (PhysicsVector) this.velocity.clone();
+		PhysicsVector velocity = (PhysicsVector) this.getVelocity().clone();
 		PhysicsVector acceleration = (PhysicsVector) this.acceleration.clone();
-		char state = this.state;
+		char state = this.getState();
 		int size = this.getSize();
 		return new Body(position, velocity, acceleration, size, state);
 	}
@@ -135,5 +141,62 @@ public class Body {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	public PhysicsVector getVelocity() {
+		return velocity;
+	}
+
+	public void setVelocity(PhysicsVector velocity) {
+		this.velocity=velocity;
+	}
+	
+	public void editVelocity(PhysicsVector velocity) {
+		this.velocity.setLocation(velocity);
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public char getState() {
+		return state;
+	}
+
+	public void setState(char state) {
+		this.state = state;
+		this.color = state=='S'?Color.BLUE:(state=='I'?Color.RED:Color.GRAY);
+	}
+
+	@Override
+	public String toString() {
+		return "Body [position=" + position + ", velocity=" + velocity + ", acceleration=" + acceleration + ", state="
+				+ state + ", color=" + color + ", size=" + size + ", id=" + id + "]";
+	}
+
+	public int getInFlag() {
+		return inFlag;
+	}
+
+	public void setInFlag(int inFlag) {
+		System.out.println("reseted");
+		this.inFlag = inFlag;
+	}
+
+	public void decreaseInFlag() {
+		System.out.println("decreased: "+(inFlag-2));
+		inFlag--;
+	}
+
+	public boolean isOutFlag() {
+		return outFlag;
+	}
+
+	public void setOutFlag(boolean outFlag) {
+		this.outFlag = outFlag;
 	}
 }

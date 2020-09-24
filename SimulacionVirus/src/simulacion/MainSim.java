@@ -17,11 +17,13 @@ public class MainSim {
 	private Timer timer;
 	Body[] initial;
 	Timer t;
-	Random r = new Random(); 
+	Random r = new Random();
+	Random r2 = new Random();
 	
 	public void generate() {
 		for (int i = 0; i < bodies.length; i++) {//															  r.nextDouble()-0.5,r.nextDouble()-0.5
 			bodies[i] = Body.generateBody(r);
+			bodies[i].setId(i);
 		}
 		initial = new Body[bodies.length];
 		for (int i = 0; i < bodies.length; i++) {
@@ -52,7 +54,7 @@ public class MainSim {
 	}
 	
 	public MainSim() {
-		this.bodies = new Body[250];
+		this.bodies = new Body[100];
 		generate();
 		JFMain jfMain = new JFMain(bodies, new ActionListener() {
 			@Override
@@ -87,22 +89,51 @@ public class MainSim {
 			public void actionPerformed(ActionEvent e) {
 				for (Body body : bodies) {
 					body.update(bodies, r);
-					if(body.checkOutside(jfMain.getJpDraw().getBounds())) {
-						Random r2 = new Random();
-						if(r2.nextDouble()<0.25) {
-							PhysicsVector pv = new PhysicsVector();
-							pv.x=
-							pv.y-body.getSize();
-							body.repos(pv);
-						}else if(r2.nextDouble()<0.5) {
-							
-						}else if(r2.nextDouble()<0.75) {
-							
-						}else {
-							
+//					System.out.println(body);
+					if(body.isOutFlag()) {
+						if(!body.checkOutside(jfMain.getJpDraw().getBounds())) {
+							body.setOutFlag(false);
 						}
-						body.regenerate(r);
+					}else {
+						if(body.checkOutside(jfMain.getJpDraw().getBounds())) {//Cuando sale
+							double rand = r2.nextDouble(); 
+							if(rand<0.25) {//generate on top
+								System.out.println("arriba");
+								PhysicsVector pv = new PhysicsVector();
+								pv.x = r2.nextDouble()*jfMain.getJpDraw().getWidth();
+								pv.y = -body.getSize();
+								body.repos(pv);
+								body.editVelocity(new PhysicsVector(0,0.5));
+							}else if(rand<0.5) {//derecha
+								System.out.println("derecha");
+								PhysicsVector pv = new PhysicsVector();
+								pv.x = jfMain.getJpDraw().getWidth()+body.getSize();
+								pv.y = r2.nextDouble()*jfMain.getJpDraw().getHeight();
+								body.repos(pv);
+								body.editVelocity(new PhysicsVector(-0.5,0));
+							}else if(rand<0.75) {//izquierda
+								System.out.println("left");
+								PhysicsVector pv = new PhysicsVector();
+								pv.x = -body.getSize();
+								pv.y = r2.nextDouble()*jfMain.getJpDraw().getHeight();
+								body.repos(pv);
+								body.editVelocity(new PhysicsVector(0.5,0));
+							}else {//abajo
+								System.out.println("abajo");
+								PhysicsVector pv = new PhysicsVector();
+								pv.x = r2.nextDouble()*jfMain.getJpDraw().getWidth();
+								pv.y = jfMain.getJpDraw().getWidth()+body.getSize();
+								body.repos(pv);
+								body.editVelocity(new PhysicsVector(0,-0.5));
+							}
+//							body.setInFlag(100);
+							body.setOutFlag(true);
+//							body.regenerate(r);
+						}
 					}
+					if(body.getInFlag() > 0) {
+						body.decreaseInFlag();
+					}else {}
 					jfMain.update();
 				}
 			}
