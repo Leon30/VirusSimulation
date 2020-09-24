@@ -7,14 +7,15 @@ import java.util.Random;
 
 public class Body {
 
-	public static final int PixelsToSpread = 10;
-	public static final int Population = 50;
-	public static final double SpreadProbability = 0.01;
+	public static int PixelsToSpread = 10;
+	public static int Population = 50;
+	public static double SpreadProbability = 0.01;
 	public static int SIZE = 15;
 	private PhysicsVector position;
 	private PhysicsVector velocity;
 	private char state;//S:Suceptible,I:infectado,R:recuperado
 	private Color color = Color.RED;
+	private int virusTimer = 0;
 	private int size;
 	private int id;
 	private boolean outFlag = false;
@@ -54,26 +55,16 @@ public class Body {
 		int y = (int)((position.getY()-(getSize()/2)));
 		g.fillOval(x, y, getSize(), getSize());
 		
-//		PhysicsVector pos2 = (PhysicsVector) position.clone();
-//		PhysicsVector auxVel = (PhysicsVector) velocity.clone();
-//		auxVel.scalarMult(4);
-//		pos2.add(auxVel);
-//		g.setStroke(new BasicStroke(2));
-//		g.setColor(Color.BLACK);
-//		g.drawLine((int)this.position.x, (int)this.position.y, (int)pos2.x, (int)pos2.y);
-		String strpos = String.valueOf(getId());
-		g.drawBytes(strpos.getBytes(), 0, strpos.length(), x+size/2, y-15);
-//		String strpos = String.format("posicion (%.3f,%.3f)",position.x,position.y);
+//		String strpos = String.valueOf(getId());
 //		g.drawBytes(strpos.getBytes(), 0, strpos.length(), x+size/2, y-15);
-//		
-//		String strvel = String.format("velocidad (%.3f,%.3f)",velocity.x,velocity.y);
-//		g.drawBytes(strvel.getBytes(), 0, strvel.length(), x+size/2, y);
 	}
 	
-	public void applySpread(Body body) {
+	public void applySpread(Body body, MainSim mainSim) {
 		 if(isIn(body, PixelsToSpread)) {
-			 if(body.getState()=='I' && Math.random() < SpreadProbability) {
+			 if(state=='S' && body.getState()=='I' && Math.random() < SpreadProbability) {
 				 this.setState('I');
+				 virusTimer=300;
+				 mainSim.getSick();
 			 }
 		 }
 	}
@@ -91,11 +82,18 @@ public class Body {
 		return dist <= ((this.getSize()/2) + (body.getSize()/2)) + min_dist;
 	}
 	
-	public void update(Body[] bodies,Random r) {
+	public void update(Body[] bodies,Random r,MainSim mainSim) {
 		for (Body body : bodies) {
 			if(body!=this) {
-				this.applySpread(body);
+				this.applySpread(body, mainSim);
 			}
+		}
+		
+		if(virusTimer>1) {
+			virusTimer--;
+		}else if(virusTimer == 1) {
+			setState('R');
+			virusTimer--;
 		}
 		
 //		velocity.add(acceleration);

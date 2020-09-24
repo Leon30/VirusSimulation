@@ -1,13 +1,8 @@
 package simulacion;
 
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import javax.swing.Timer;
 
@@ -19,6 +14,8 @@ public class MainSim {
 	Timer t;
 	Random r = new Random();
 	Random r2 = new Random();
+	int countHealties=0;;
+	int countSick=0;
 	JFMain jfMain;
 	
 	public void generate() {
@@ -35,6 +32,16 @@ public class MainSim {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public int countState(char state) {
+		int sum = 0;
+		for (Body body : bodies) {
+			if(body.getState()==state) {
+				sum++;
+			}
+		}
+		return sum;
 	}
 	
 	public void fixOverpos() {
@@ -76,13 +83,16 @@ public class MainSim {
 				jfMain.setBodies(bodies);
 				generate();
 				run();
+				countHealties=countState('S');
+				countSick=countState('I');
 			}
 		});
+		MainSim out = this;
 		timer = new Timer(0,new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (Body body : bodies) {
-					body.update(bodies, r);
+					body.update(bodies, r, out);
 //					System.out.println(body);
 					if(body.isOutFlag()) {
 						if(!body.checkOutside(jfMain.getJpDraw().getBounds())) {
@@ -117,10 +127,21 @@ public class MainSim {
 								body.editVelocity(new PhysicsVector(0,-0.5));
 							}
 							body.setOutFlag(true);
+							char auxState = body.getState();
 							body.regenerateState(r);
+							if(auxState != body.getState()) {
+								if(body.getState() == 'I') {
+									countSick++;
+									countHealties--;
+								}else {
+									countHealties++;
+									countSick--;
+								}
+							}
 						}
 					}
 					jfMain.update();
+					jfMain.updateData(countHealties, countSick);
 				}
 			}
 		});
@@ -133,5 +154,10 @@ public class MainSim {
 	public static void main(String[] args) {
 		new MainSim();
 		
+	}
+
+	public void getSick() {
+		countSick++;
+		countHealties--;
 	}
 }
