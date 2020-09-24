@@ -33,7 +33,7 @@ public class JFMain extends JFrame implements ActionListener{
 	}
 
 	private void initComponents(ActionListener generate, ActionListener pause, ActionListener random) {
-		setSize(700, 700);
+		setSize(600, 300);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		getContentPane().add(jpConfig,BorderLayout.CENTER);
@@ -79,6 +79,7 @@ public class JFMain extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		this.remove(jpConfig);
+		setSize(700, 700);
 		start.actionPerformed(null);
 		getContentPane().add(jpDraw,BorderLayout.CENTER);
 		getContentPane().add(jpInfo,BorderLayout.SOUTH);
