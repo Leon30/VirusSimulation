@@ -31,7 +31,6 @@ public class Body {
 		this.position = position;
 		this.setVelocity(velocity);
 		this.setState(state);
-		this.color = state=='S'?Color.BLUE:(state=='I'?Color.RED:Color.GRAY);
 		this.setSize(size);
 	}
 	

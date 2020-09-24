@@ -80,6 +80,7 @@ public class JFMain extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		this.remove(jpConfig);
 		setSize(700, 700);
+		setLocationRelativeTo(null);
 		start.actionPerformed(null);
 		getContentPane().add(jpDraw,BorderLayout.CENTER);
 		getContentPane().add(jpInfo,BorderLayout.SOUTH);
