@@ -128,7 +128,7 @@ public class MainSim {
 							}
 //							body.setInFlag(100);
 							body.setOutFlag(true);
-//							body.regenerate(r);
+							body.regenerate(r);
 						}
 					}
 					if(body.getInFlag() > 0) {

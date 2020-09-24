@@ -8,9 +8,9 @@ import java.util.Random;
 public class Body {
 
 	public static int PixelsToSpread = 10;
+	public static double SpreadProbability = 0.1;
 	private PhysicsVector position;
 	private PhysicsVector velocity;
-	private PhysicsVector acceleration;
 	private char state;//S:Suceptible,I:infectado,R:recuperado
 	private Color color = Color.RED;
 	private int size;
@@ -18,32 +18,29 @@ public class Body {
 	private int inFlag = 0;
 	private boolean outFlag = false;
 	
-	public Body(PhysicsVector position, PhysicsVector velocity, PhysicsVector acceleration, int size) {
+	public Body(PhysicsVector position, PhysicsVector velocity, int size) {
 		super();
 		this.position = position;
 		this.setVelocity(velocity);
-		this.acceleration = acceleration;
 		this.setSize(size);
 	}
 
-	public Body(PhysicsVector position, PhysicsVector velocity, PhysicsVector acceleration, int size, char state) {
+	public Body(PhysicsVector position, PhysicsVector velocity, int size, char state) {
 		super();
 		this.position = position;
 		this.setVelocity(velocity);
-		this.acceleration = acceleration;
 		this.setState(state);
 		this.color = state=='S'?Color.BLUE:(state=='I'?Color.RED:Color.GRAY);
 		this.setSize(size);
 	}
 	
 	public static final Body generateBody(Random r) {
-		return new Body(new PhysicsVector(r.nextDouble()*700, r.nextDouble()*680), new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5), new PhysicsVector(0,0),15,r.nextFloat()<0.1?'I':'S');
+		return new Body(new PhysicsVector(r.nextDouble()*700, r.nextDouble()*680), new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5), 15,r.nextFloat()<0.1?'I':'S');
 	}
 	
 	public void regenerate(Random r) {
 		position = new PhysicsVector(r.nextDouble()*700, r.nextDouble()*680);
 		setVelocity(new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5));
-		acceleration = new PhysicsVector(0,0);
 		setState(r.nextFloat()<0.1?'I':'S');
 	}
 
@@ -73,15 +70,9 @@ public class Body {
 //		g.drawBytes(strvel.getBytes(), 0, strvel.length(), x+size/2, y);
 	}
 	
-	public void applyCollision(Body body) {
+	public void applySpread(Body body) {
 		 if(isIn(body, PixelsToSpread)) {
-//			 double auxvx = velocity.x;
-//			 double auxvy = velocity.y;
-//			 velocity.x = body.velocity.x;
-//			 velocity.y = body.velocity.y;
-//			 body.velocity.x=auxvx;
-//			 body.velocity.y=auxvy;
-			 if(body.getState()=='I') {
+			 if(body.getState()=='I' && Math.random() < SpreadProbability) {
 				 this.setState('I');
 			 }
 		 }
@@ -103,7 +94,7 @@ public class Body {
 	public void update(Body[] bodies,Random r) {
 		for (Body body : bodies) {
 			if(body!=this) {
-				this.applyCollision(body);
+				this.applySpread(body);
 			}
 		}
 		
@@ -129,10 +120,9 @@ public class Body {
 	protected Object clone() throws CloneNotSupportedException {
 		PhysicsVector position = (PhysicsVector) this.position.clone();
 		PhysicsVector velocity = (PhysicsVector) this.getVelocity().clone();
-		PhysicsVector acceleration = (PhysicsVector) this.acceleration.clone();
 		char state = this.getState();
 		int size = this.getSize();
-		return new Body(position, velocity, acceleration, size, state);
+		return new Body(position, velocity, size, state);
 	}
 
 	public int getSize() {
@@ -174,7 +164,7 @@ public class Body {
 
 	@Override
 	public String toString() {
-		return "Body [position=" + position + ", velocity=" + velocity + ", acceleration=" + acceleration + ", state="
+		return "Body [position=" + position + ", velocity=" + velocity + ", state="
 				+ state + ", color=" + color + ", size=" + size + ", id=" + id + "]";
 	}
 
