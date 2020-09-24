@@ -19,6 +19,9 @@ public class JFMain extends JFrame implements ActionListener{
 	private Body[] bodies;
 	private JPDraw jpDraw;
 	private JPConfig jpConfig;
+	private JPanel jpStat;
+	JLabel jlSick;
+	JLabel jlHealty;
 	JPanel jpInfo;
 	ActionListener start;
 	
@@ -33,10 +36,21 @@ public class JFMain extends JFrame implements ActionListener{
 	}
 
 	private void initComponents(ActionListener generate, ActionListener pause, ActionListener random) {
-		setSize(600, 300);
+		setSize(600, 400);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		getContentPane().add(jpConfig,BorderLayout.CENTER);
+		
+		jpStat = new JPanel();
+		jpStat.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//		jpStat.setLayout(new BoxLayout(jpStat, BoxLayout.LINE_AXIS));
+		jlSick=new JLabel("Contagiados:         ");
+		jlSick.setAlignmentX(CENTER_ALIGNMENT);
+		jpStat.add(jlSick);
+		jlHealty = new JLabel("Sanos: ");
+		jlHealty.setAlignmentX(CENTER_ALIGNMENT);
+		jpStat.add(jlHealty);
+		jpStat.setAlignmentX(CENTER_ALIGNMENT);
 		
 		jpInfo = new JPanel();
 		jpInfo.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
@@ -60,6 +74,20 @@ public class JFMain extends JFrame implements ActionListener{
 		JButton jbGenerate = new JButton("Generar");
 		jbGenerate.addActionListener(random);
 		jpInfo.add(jbGenerate);
+		
+		JButton jbConfig = new JButton("Configuracion");
+		jbConfig.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				remove(jpDraw);
+				remove(jpInfo);
+				remove(jpStat);
+				setSize(600, 400);
+				getContentPane().add(jpConfig,BorderLayout.CENTER);
+				setLocationRelativeTo(null);
+			}
+		});
+		jpInfo.add(jbConfig);
 
 		jpInfo.setAlignmentX(CENTER_ALIGNMENT);
 	}
@@ -75,15 +103,25 @@ public class JFMain extends JFrame implements ActionListener{
 	public void setJpDraw(JPDraw jpDraw) {
 		this.jpDraw = jpDraw;
 	}
+	
+	public void updateData(int sanos,int contagiados) {
+		jlHealty.setText("Sanos: "+sanos);
+		jlSick.setText("Contagiados: "+contagiados+"\t");
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		this.remove(jpConfig);
 		setSize(700, 700);
 		setLocationRelativeTo(null);
+		Body.PixelsToSpread=jpConfig.getDist();
+		Body.Population=jpConfig.getAforo();
+		Body.SpreadProbability=jpConfig.getProb();
+		Body.SIZE=jpConfig.getSizeV();
 		start.actionPerformed(null);
 		getContentPane().add(jpDraw,BorderLayout.CENTER);
 		getContentPane().add(jpInfo,BorderLayout.SOUTH);
+		getContentPane().add(jpStat,BorderLayout.NORTH);
 		repaint();
 		revalidate();
 	}

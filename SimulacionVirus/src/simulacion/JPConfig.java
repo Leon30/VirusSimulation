@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 public class JPConfig extends JPanel{
@@ -21,6 +20,7 @@ public class JPConfig extends JPanel{
 	JSpinner jsAforo;
 	JSpinner jsDist;
 	JSpinner jsProb;
+	JSpinner jsSize;
 
 	public JPConfig(ActionListener listener) {
 		gbc=new GridBagConstraints();
@@ -78,12 +78,41 @@ public class JPConfig extends JPanel{
 		gbc.gridx=1;
 		this.add(jsProb,gbc);
 		
+		gbc.gridy=4;
+		gbc.gridx=0;
+		gbc.ipadx=20;
+		JLabel jLabel5 = new JLabel("<html><h2>Tamaño</h2></html>");
+		jLabel5.setAlignmentX(LEFT_ALIGNMENT);
+		this.add(jLabel5,gbc);
+		
+		jsSize = new JSpinner(new SpinnerNumberModel(15, 0, 100, 1));
+		jsSize.setPreferredSize(new Dimension(150, 25));
+		gbc.ipady=3;
+		gbc.gridx=1;
+		this.add(jsSize,gbc);
+		
 		jbRun = new JButton("Correr simulación");
 		jbRun.addActionListener(listener);
 		gbc.gridx=0;
-		gbc.gridy=4;
+		gbc.gridy=5;
 		gbc.gridwidth = 2;
 		gbc.anchor=GridBagConstraints.CENTER;
 		this.add(jbRun,gbc);
+	}
+	
+	public double getProb() {
+		return (double) jsProb.getValue();
+	}
+	
+	public int getAforo() {
+		return (int) jsAforo.getValue();
+	}
+	
+	public int getDist() {
+		return (int) jsDist.getValue();
+	}
+	
+	public int getSizeV() {
+		return (int) jsSize.getValue();
 	}
 }
