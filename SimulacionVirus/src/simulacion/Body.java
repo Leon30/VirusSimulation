@@ -7,8 +7,10 @@ import java.util.Random;
 
 public class Body {
 
-	public static int PixelsToSpread = 10;
-	public static double SpreadProbability = 0.1;
+	public static final int PixelsToSpread = 10;
+	public static final int Population = 50;
+	public static final double SpreadProbability = 0.01;
+	public static int SIZE = 15;
 	private PhysicsVector position;
 	private PhysicsVector velocity;
 	private char state;//S:Suceptible,I:infectado,R:recuperado
@@ -34,7 +36,7 @@ public class Body {
 	}
 	
 	public static final Body generateBody(Random r) {
-		return new Body(new PhysicsVector(r.nextDouble()*700, r.nextDouble()*680), new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5), 15,r.nextFloat()<0.1?'I':'S');
+		return new Body(new PhysicsVector(r.nextDouble()*700, r.nextDouble()*680), new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5), SIZE,r.nextFloat()<0.1?'I':'S');
 	}
 	
 	public void regenerate(Random r) {
@@ -173,5 +175,9 @@ public class Body {
 
 	public void setOutFlag(boolean outFlag) {
 		this.outFlag = outFlag;
+	}
+
+	public void regenerateState(Random r) {
+		setState(r.nextFloat()<0.1?'I':'S');
 	}
 }

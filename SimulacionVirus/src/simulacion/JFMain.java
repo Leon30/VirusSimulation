@@ -13,16 +13,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class JFMain extends JFrame{
+public class JFMain extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
-	Body[] bodies;
+	private Body[] bodies;
 	private JPDraw jpDraw;
+	private JPConfig jpConfig;
+	JPanel jpInfo;
+	ActionListener start;
 	
-	public JFMain(Body[] bodies,ActionListener generate, ActionListener pause, ActionListener random) throws HeadlessException {
+	public JFMain(Body[] bodies,ActionListener generate, ActionListener pause, ActionListener random,ActionListener start) throws HeadlessException {
 		super();
-		this.bodies = bodies;
+		this.start = start;
+		this.setBodies(bodies);
 		this.setJpDraw(new JPDraw(bodies));
+		jpConfig = new JPConfig(this);
 		initComponents(generate, pause, random);
 		setVisible(true);
 	}
@@ -31,9 +36,9 @@ public class JFMain extends JFrame{
 		setSize(700, 700);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
-		getContentPane().add(getJpDraw(),BorderLayout.CENTER);
+		getContentPane().add(jpConfig,BorderLayout.CENTER);
 		
-		JPanel jpInfo = new JPanel();
+		jpInfo = new JPanel();
 		jpInfo.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
 //		jpInfo.setLayout(new BoxLayout(jpInfo, BoxLayout.X_AXIS));
 		
@@ -57,7 +62,6 @@ public class JFMain extends JFrame{
 		jpInfo.add(jbGenerate);
 
 		jpInfo.setAlignmentX(CENTER_ALIGNMENT);
-		getContentPane().add(jpInfo,BorderLayout.SOUTH);
 	}
 	
 	public void update() {
@@ -70,5 +74,24 @@ public class JFMain extends JFrame{
 
 	public void setJpDraw(JPDraw jpDraw) {
 		this.jpDraw = jpDraw;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		this.remove(jpConfig);
+		start.actionPerformed(null);
+		getContentPane().add(jpDraw,BorderLayout.CENTER);
+		getContentPane().add(jpInfo,BorderLayout.SOUTH);
+		repaint();
+		revalidate();
+	}
+
+	public Body[] getBodies() {
+		return bodies;
+	}
+
+	public void setBodies(Body[] bodies) {
+		this.bodies = bodies;
+		if(jpDraw != null) jpDraw.bodies=bodies;
 	}
 }

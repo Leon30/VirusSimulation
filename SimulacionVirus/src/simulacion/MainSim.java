@@ -19,6 +19,7 @@ public class MainSim {
 	Timer t;
 	Random r = new Random();
 	Random r2 = new Random();
+	JFMain jfMain;
 	
 	public void generate() {
 		for (int i = 0; i < bodies.length; i++) {//															  r.nextDouble()-0.5,r.nextDouble()-0.5
@@ -43,9 +44,7 @@ public class MainSim {
 	}
 	
 	public MainSim() {
-		this.bodies = new Body[100];
-		generate();
-		JFMain jfMain = new JFMain(bodies, new ActionListener() {
+		jfMain = new JFMain(bodies, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				for (int i = 0; i < bodies.length; i++) {
@@ -69,6 +68,14 @@ public class MainSim {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				generate();
+			}
+		},new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				bodies = new Body[Body.Population];
+				jfMain.setBodies(bodies);
+				generate();
+				run();
 			}
 		});
 		timer = new Timer(0,new ActionListener() {
@@ -109,9 +116,8 @@ public class MainSim {
 								body.repos(pv);
 								body.editVelocity(new PhysicsVector(0,-0.5));
 							}
-//							body.setInFlag(100);
 							body.setOutFlag(true);
-							body.regenerate(r);
+							body.regenerateState(r);
 						}
 					}
 					jfMain.update();
@@ -125,7 +131,7 @@ public class MainSim {
 	}
 	
 	public static void main(String[] args) {
-		new MainSim().run();
+		new MainSim();
 		
 	}
 }
