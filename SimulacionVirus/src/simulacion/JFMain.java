@@ -23,18 +23,20 @@ public class JFMain extends JFrame implements ActionListener{
 	JLabel jlHealty;
 	JPanel jpInfo;
 	ActionListener start;
+	JPanel jpSout;
+	private JPPlot jpplot;
 	
-	public JFMain(Body[] bodies,ActionListener generate, ActionListener pause, ActionListener random,ActionListener start) throws HeadlessException {
+	public JFMain(Body[] bodies,ActionListener generate, ActionListener pause, ActionListener random,ActionListener start, MainSim mainSim) throws HeadlessException {
 		super();
 		this.start = start;
 		this.setBodies(bodies);
 		this.setJpDraw(new JPDraw(bodies));
 		jpConfig = new JPConfig(this);
-		initComponents(generate, pause, random);
+		initComponents(generate, pause, random, mainSim);
 		setVisible(true);
 	}
 
-	private void initComponents(ActionListener generate, ActionListener pause, ActionListener random) {
+	private void initComponents(ActionListener generate, ActionListener pause, ActionListener random, MainSim mainSim) {
 		setSize(600, 400);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -48,8 +50,12 @@ public class JFMain extends JFrame implements ActionListener{
 		jpStat.add(jlHealty);
 		jpStat.setAlignmentX(CENTER_ALIGNMENT);
 		
+		jpSout = new JPanel(new BorderLayout());
+		jpplot = new JPPlot(mainSim);
+		jpSout.add(jpplot,BorderLayout.NORTH);
 		jpInfo = new JPanel();
 		jpInfo.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
+		jpSout.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
 //		jpInfo.setLayout(new BoxLayout(jpInfo, BoxLayout.X_AXIS));
 		
 		JButton jbReset = new JButton("Reset");
@@ -71,12 +77,14 @@ public class JFMain extends JFrame implements ActionListener{
 		jbGenerate.addActionListener(random);
 		jpInfo.add(jbGenerate);
 		
+		jpSout.add(jpInfo,BorderLayout.SOUTH);
+		
 		JButton jbConfig = new JButton("Configuracion");
 		jbConfig.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				remove(jpDraw);
-				remove(jpInfo);
+				remove(jpSout);
 				remove(jpStat);
 				setSize(600, 400);
 				getContentPane().add(jpConfig,BorderLayout.CENTER);
@@ -90,6 +98,7 @@ public class JFMain extends JFrame implements ActionListener{
 	
 	public void update() {
 		getJpDraw().repaint();
+		jpplot.repaint();
 	}
 
 	public JPDraw getJpDraw() {
@@ -115,7 +124,7 @@ public class JFMain extends JFrame implements ActionListener{
 		Body.SIZE=jpConfig.getSizeV();
 		start.actionPerformed(null);
 		getContentPane().add(jpDraw,BorderLayout.CENTER);
-		getContentPane().add(jpInfo,BorderLayout.SOUTH);
+		getContentPane().add(jpSout,BorderLayout.SOUTH);
 		getContentPane().add(jpStat,BorderLayout.NORTH);
 		repaint();
 		revalidate();

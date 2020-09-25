@@ -88,7 +88,7 @@ public class MainSim {
 				generate();
 				run();
 			}
-		});
+		}, this);
 		MainSim out = this;
 		timer = new Timer(0,new ActionListener() {
 			@Override
