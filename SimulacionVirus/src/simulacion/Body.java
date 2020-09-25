@@ -63,7 +63,7 @@ public class Body {
 		 if(isIn(body, PixelsToSpread)) {
 			 if(state=='S' && body.getState()=='I' && Math.random() < SpreadProbability) {
 				 this.setState('I');
-				 virusTimer=300;
+				 virusTimer=5000;
 				 mainSim.getSick();
 			 }
 		 }

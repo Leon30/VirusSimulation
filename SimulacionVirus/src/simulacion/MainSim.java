@@ -32,6 +32,8 @@ public class MainSim {
 				e.printStackTrace();
 			}
 		}
+		countHealties = countState('S');
+		countSick = countState('I');
 	}
 	
 	public int countState(char state) {
@@ -83,8 +85,6 @@ public class MainSim {
 				jfMain.setBodies(bodies);
 				generate();
 				run();
-				countHealties=countState('S');
-				countSick=countState('I');
 			}
 		});
 		MainSim out = this;
