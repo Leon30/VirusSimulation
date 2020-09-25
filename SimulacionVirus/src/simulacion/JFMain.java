@@ -129,6 +129,10 @@ public class JFMain extends JFrame implements ActionListener{
 		repaint();
 		revalidate();
 	}
+	
+	public void reset() {
+		jpplot.reset();
+	}
 
 	public Body[] getBodies() {
 		return bodies;

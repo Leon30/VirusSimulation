@@ -65,5 +65,9 @@ public class JPPlot extends DoubleBuffer{
 	
 	public void reset() {
 		t=0;
+		for (int i = 0; i < paintMem.length; i++) {
+			paintMem[i]=new int[3];
+		}
+		repaint();
 	}
 }

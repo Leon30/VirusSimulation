@@ -20,7 +20,7 @@ public class MainSim {
 	JFMain jfMain;
 	
 	public void generate() {
-		for (int i = 0; i < bodies.length; i++) {//															  r.nextDouble()-0.5,r.nextDouble()-0.5
+		for (int i = 0; i < bodies.length; i++) {
 			bodies[i] = Body.generateBody(r);
 			bodies[i].setId(i);
 		}
@@ -58,6 +58,7 @@ public class MainSim {
 		jfMain = new JFMain(bodies, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				jfMain.reset();
 				for (int i = 0; i < bodies.length; i++) {
 					try {
 						bodies[i]=(Body) initial[i].clone();
@@ -78,6 +79,7 @@ public class MainSim {
 		}, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				jfMain.reset();
 				generate();
 			}
 		},new ActionListener() {			
