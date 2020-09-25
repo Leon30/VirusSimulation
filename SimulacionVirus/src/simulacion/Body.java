@@ -42,7 +42,8 @@ public class Body {
 	public void regenerate(Random r) {
 		position = new PhysicsVector(r.nextDouble()*700, r.nextDouble()*680);
 		setVelocity(new PhysicsVector(r.nextDouble()-0.5,r.nextDouble()-0.5));
-		setState(r.nextFloat()<0.1?'I':'S');
+		double rand = r.nextFloat();
+		setState(rand<0.2?(rand<0.1?'I':'R'):'S');
 	}
 
 	public Body() {
@@ -93,13 +94,14 @@ public class Body {
 			virusTimer--;
 		}else if(virusTimer == 1) {
 			setState('R');
+			mainSim.recover();
 			virusTimer--;
 		}
 		
 //		velocity.add(acceleration);
 		position.add(getVelocity());
 //		acceleration.decrease(0.8);
-		if(r.nextDouble()<0.005) {
+		if(!outFlag && r.nextDouble()<0.005) {
 			getVelocity().x = (r.nextDouble())-0.5;
 			getVelocity().y = (r.nextDouble())-0.5;
 		}
@@ -107,6 +109,7 @@ public class Body {
 	}
 	
 	public boolean checkOutside(Rectangle rect) {
+		rect.y=0;
 		return !rect.contains(position);
 	}
 	

@@ -14,8 +14,9 @@ public class MainSim {
 	Timer t;
 	Random r = new Random();
 	Random r2 = new Random();
-	int countHealties=0;;
-	int countSick=0;
+	int countSusep=0;;
+	int countInfected=0;
+	int countRecov=0;
 	JFMain jfMain;
 	
 	public void generate() {
@@ -32,8 +33,9 @@ public class MainSim {
 				e.printStackTrace();
 			}
 		}
-		countHealties = countState('S');
-		countSick = countState('I');
+		countSusep = countState('S');
+		countInfected = countState('I');
+		countRecov = countState('R');
 	}
 	
 	public int countState(char state) {
@@ -127,21 +129,37 @@ public class MainSim {
 								body.editVelocity(new PhysicsVector(0,-0.5));
 							}
 							body.setOutFlag(true);
+							//Hace los cambios en los contadores segun como cambie el estado
 							char auxState = body.getState();
 							body.regenerateState(r);
 							if(auxState != body.getState()) {
 								if(body.getState() == 'I') {
-									countSick++;
-									countHealties--;
+									if(auxState == 'S') {
+										countSusep--;
+									}else {
+										countRecov--;
+									}
+									countInfected++;
+								}else if(body.getState() == 'S'){
+									if(auxState == 'I') {
+										countInfected--;
+									}else {
+										countRecov--;
+									}
+									countSusep++;
 								}else {
-									countHealties++;
-									countSick--;
+									if(auxState == 'I') {
+										countInfected--;
+									}else {
+										countSusep--;
+									}
+									countRecov++;
 								}
 							}
 						}
 					}
 					jfMain.update();
-					jfMain.updateData(countHealties, countSick);
+					jfMain.updateData(countSusep, countInfected, countRecov);
 				}
 			}
 		});
@@ -157,7 +175,12 @@ public class MainSim {
 	}
 
 	public void getSick() {
-		countSick++;
-		countHealties--;
+		countInfected++;
+		countSusep--;
+	}
+	
+	public void recover() {
+		countRecov++;
+		countInfected--;
 	}
 }

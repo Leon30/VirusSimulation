@@ -20,7 +20,6 @@ public class JFMain extends JFrame implements ActionListener{
 	private JPDraw jpDraw;
 	private JPConfig jpConfig;
 	private JPanel jpStat;
-	JLabel jlSick;
 	JLabel jlHealty;
 	JPanel jpInfo;
 	ActionListener start;
@@ -44,9 +43,6 @@ public class JFMain extends JFrame implements ActionListener{
 		jpStat = new JPanel();
 		jpStat.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 //		jpStat.setLayout(new BoxLayout(jpStat, BoxLayout.LINE_AXIS));
-		jlSick=new JLabel("Contagiados:         ");
-		jlSick.setAlignmentX(CENTER_ALIGNMENT);
-		jpStat.add(jlSick);
 		jlHealty = new JLabel("Sanos: ");
 		jlHealty.setAlignmentX(CENTER_ALIGNMENT);
 		jpStat.add(jlHealty);
@@ -104,9 +100,8 @@ public class JFMain extends JFrame implements ActionListener{
 		this.jpDraw = jpDraw;
 	}
 	
-	public void updateData(int sanos,int contagiados) {
-		jlHealty.setText("Sanos: "+sanos);
-		jlSick.setText("Contagiados: "+contagiados+"\t");
+	public void updateData(int sanos,int contagiados, int recuperados) {
+		jlHealty.setText("Sanos: "+sanos+ " Contagiados:"+contagiados+" Recuperados: "+recuperados);
 	}
 
 	@Override
